@@ -1,5 +1,5 @@
 # Import flask and template operators
-from flask import Flask
+from flask import Flask, jsonify
 
 # Import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
@@ -18,7 +18,7 @@ db = SQLAlchemy(app)
 # Sample HTTP error handling
 @app.errorhandler(404)
 def not_found(error):
-    return 404
+    return jsonify(message="not found"), 404
 
 
 # Import a module / component using its blueprint handler variable (mod_auth)

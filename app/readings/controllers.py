@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request, abort, make_response
 from app import db
 from app.readings.models import Reading
 
-readings = Blueprint("readings", __name__, url_prefix="/readings")
+readings = Blueprint("readings", __name__, url_prefix="/api/readings")
 
 
 @readings.route("/", methods=["GET"])
@@ -30,22 +30,28 @@ def save_reading():
     reading = Reading(args["value"], args["timestamp"])
     db.session.add(reading)
     db.session.commit()
-    return make_response(jsonify({"message": "reading created"}), 200)
+    return jsonify(message="reading created")
 
 
 @readings.route("/<int:reading_id>", methods=["PUT"])
 def update_reading(reading_id):
     args = validate(request)
-    db.session.query(Reading).filter_by(id=reading_id).update({"value": args["value"], "timestamp": args["timestamp"]})
-    db.session.commit()
-    return make_response(jsonify({"message": "reading updated"}), 200)
+    rows_updated = db.session.query(Reading).filter_by(id=reading_id).update(
+        {"value": args["value"], "timestamp": args["timestamp"]})
+    if rows_updated == 1:
+        db.session.commit()
+        return jsonify(message="reading updated")
+    else:
+        return jsonify(message="reading not found"), 404
 
 
 @readings.route("/<int:reading_id>", methods=["DELETE"])
 def delete_reading(reading_id):
-    Reading.query.filter_by(id=reading_id).delete()
-    db.session.commit()
-    return make_response(jsonify({"message": "reading deleted"}), 200)
+    if Reading.query.filter_by(id=reading_id).delete() == 1:
+        db.session.commit()
+        return jsonify(message="reading deleted")
+    else:
+        return jsonify(message="reading not found"), 404
 
 
 def validate(reading_request):
