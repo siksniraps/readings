@@ -1,7 +1,7 @@
 antiorm==1.2.1
 Click==7.0
 db==0.1.1
-Flask==1.1.1
+Flask==2.3.2
 Flask-SQLAlchemy==2.4.1
 itsdangerous==1.1.0
 Jinja2==2.11.3
